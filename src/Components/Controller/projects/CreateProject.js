@@ -4,59 +4,8 @@ import { connect } from 'react-redux';
 import { Redirect } from "react-router-dom";
 import axios from 'axios';
 import { storage } from '../../../config/fbConfig';
+import ProjectDetails from './ProjectDetails';
 
-
-class ImageUpload extends Component {
-    constructor(props) {
-        super(props);
-        this.state = {
-            image: null,
-            url: '',
-            progress: 0
-        }
-        this.handleChange = this
-            .handleChange
-            .bind(this);
-        this.handleUpload = this.handleUpload.bind(this);
-    }
-
-    getURL = () => {
-        return this.url;
-    }
-
-    handleChange = e => {
-        e.preventDefault();
-        console.log("HITT");
-        if (e.target.files[0]) {
-            const image = e.target.files[0];
-            this.setState(() => ({ image }));
-        }
-    }
-
-    handleUpload = (e) => {
-        e.preventDefault();
-        const { image } = this.state;
-        const uploadTask = storage.ref(`gs://imageupload-9a880.appspot.com/${image.name}`).put(image);
-        uploadTask.on('state_changed',
-            (snapshot) => {
-                // progrss function ....
-                const progress = Math.round((snapshot.bytesTransferred / snapshot.totalBytes) * 100);
-                this.setState({ progress });
-            },
-            (error) => {
-                // error function ....
-                console.log(error);
-            },
-            () => {
-                // complete function ....
-                storage.ref('images').child(image.name).getDownloadURL().then(url => {
-                    console.log("HIT" + url);
-                    this.setState({ url });
-
-                })
-            });
-    }
-}
 
 class CreateProject extends Component {
     constructor(props) {
@@ -76,27 +25,7 @@ class CreateProject extends Component {
         this.handleUpload = this.handleUpload.bind(this);
     }
 
-    /*
-        fileSelectedHandler = event => {
-            console.log(event.target.files[0]);
-            this.setState({
-                selectedFile: event.target.files[0]
-            });
-        }
-        fileUploadHandler = () => {
-            const fd = new FormData();
-            fd.append('image', this.state.selectedFile, this.state.selectedFile.name);
-            axios.post('https://us-central1-imageupload-9a880.cloudfunctions.net/uploadFile', fd, {
-                onUploadProgress: progressEvent => {
-                    console.log('UploadProgress: ' + Math.round((progressEvent.loaded / progressEvent.total) * 100) + '%')
-                }
-            })
-                .then(res => {
-                    console.log(res);
-                });
-        }
     
-    */
 
 
     handleChange = (e) => {
@@ -118,39 +47,14 @@ class CreateProject extends Component {
             console.log("hitt Image");
             const image = e.target.files[0];
             this.setState(() => ({ image }));
-            //this.setState({
-            //this.image: image
-            //});
+            
         }
 
     }
     handleUpload = (e) => {
         e.preventDefault();
 
-        /* const { image } = this.state.image;
- 
-        // console.log("State"+this.state.image.name);
-         const uploadTask = storage.ref(`images/${image.name}`).put(image);
-         uploadTask.on('state_changed',
-             (snapshot) => {
-                 // progrss function ....
-                 const progress = Math.round((snapshot.bytesTransferred / snapshot.totalBytes) * 100);
-                 this.setState({ progress });
-             },
-             (error) => {
-                 // error function ....
-                 console.log(error);
-             },
-             () => {
-                 // complete function ....
-                 storage.ref('images').child(image.name).getDownloadURL().then(url => {
-                     console.log("HIT" + url);
-                     this.setState({ url });
- 
-                 })
-             });
- 
-             */
+        
 
         const fd = new FormData();
         fd.append('image', this.state.image, this.state.image.name);
@@ -166,7 +70,7 @@ class CreateProject extends Component {
                         url: url,
                         image: null
                     });
-                    console.log("HIT" + url);
+                   // console.log("HIT" + url);
             }).then(() => {
                 console.log("HIT State");
             console.log(this.state);

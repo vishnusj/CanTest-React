@@ -22,7 +22,8 @@ exports.projectCreated = functions.firestore
     const notification = {
       content: 'Added a new Project',
       user: `${project.authorFirstName} ${project.authorLastName}`,
-      time: admin.firestore.FieldValue.serverTimestamp()
+      time: admin.firestore.FieldValue.serverTimestamp(),
+      userId: `${project.authorId}`
     }
 
     return createNotification(notification);
@@ -40,9 +41,8 @@ exports.projectCreated = functions.firestore
       const notification  = {
         content: 'Joined the Application',
         user: `${newUser.firstName} ${newUser.lastName}`,
-        time: admin.firestore.FieldValue.serverTimestamp()
-
-      
+        time: admin.firestore.FieldValue.serverTimestamp(),
+        userId: `${project.authorId}`      
       
       }
       return createNotification(notification);

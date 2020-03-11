@@ -1,5 +1,6 @@
 import React from 'react';
 import moment from 'moment';
+import firebase from 'firebase';
 
 const Notifications = (props) => {
     const { notifications } = props;
@@ -10,6 +11,10 @@ const Notifications = (props) => {
                     <span className="card-title">Notifications</span>
                     <ul className="notifications">
                         {notifications && notifications.map(item => {
+                             let useruser = firebase.auth().currentUser;
+                            //console.log("SAME "+item.userId+" "+useruser.uid);
+                             if (item.userId == useruser.uid) {
+                                console.log("SAME "+item.userId+" "+useruser.uid);
                             return (
                                 <li key={item.id}>
                                     <span className="pink-text">{item.user} </span>
@@ -20,6 +25,7 @@ const Notifications = (props) => {
                                 </li>
 
                             )
+                             }
                         })}
                     </ul>
                 </div>

@@ -8,6 +8,8 @@ import ProjectDetails from '../src/Components/Controller/projects/ProjectDetails
 import SignIn from '../src/Components/View/auth/SignIn';
 import SignUp from '../src/Components/View/auth/SignUp'
 import CreateProject from '../src/Components/Controller/projects/CreateProject';
+import userSignIn from '../src/Components/View/auth/userSignIn';
+import doctorSignIn from '../src/Components/View/auth/doctorSignIn';
 
 class App extends Component {
 
@@ -25,6 +27,8 @@ class App extends Component {
             <Route exact path='/' component={ Dashboard } />
             <Route path='/project/:id' component = {ProjectDetails}/>
             <Route path='/signin' component = {SignIn}/>
+            <Route path='/usersignin' component = {userSignIn}/>
+            <Route path='/doctorsignin' component = {doctorSignIn}/>
             <Route path='/signup' component = {SignUp} />
             <Route path='/createproject' component = {CreateProject} />
           </Switch>
