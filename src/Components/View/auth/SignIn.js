@@ -1,10 +1,14 @@
 import React, { Component } from 'react';
 import { NavLink } from 'react-router-dom';
+import { Redirect } from "react-router-dom";
+import { connect } from "react-redux";
 
 
 class SignIn extends Component {
 
     render() {
+        const {auth} = this.props;
+        if(auth.uid) return <Redirect to='/'/>
         return (
 
             <div className="conatiner">
@@ -32,4 +36,13 @@ class SignIn extends Component {
 }
 
 
-export default SignIn;
+const mapstateToProps = (state) => {
+    return{
+        authError: state.auth.authError,
+        auth: state.firebase.auth
+    }
+}
+
+
+
+export default connect(mapstateToProps)(SignIn);
