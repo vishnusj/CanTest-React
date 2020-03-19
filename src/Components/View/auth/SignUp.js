@@ -8,7 +8,8 @@ class SignUp extends Component {
         email: '',
         password: '',
         firstName: '',
-        lastName: ''
+        lastName: '', 
+        isDoctor: false
     }
     handleChange = (e) => {
         this.setState({

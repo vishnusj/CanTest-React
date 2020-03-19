@@ -4,19 +4,26 @@ import { connect } from 'react-redux';
 import { Redirect } from "react-router-dom";
 import axios from 'axios';
 import { storage } from '../../../config/fbConfig';
+import { firestoreConnect } from "react-redux-firebase";
 import ProjectDetails from './ProjectDetails';
-
+import firebase from 'firebase';
+let doctorName = null;
+let docLocation = null;
 
 class CreateProject extends Component {
+
     constructor(props) {
+
         super(props);
+        
         this.state = {
             image: null,
             url: '',
-            
+            location: null,
             title: '',
             content: '',
-            //selectedFile: null
+            doctor: null
+
         }
 
         this.handleChange = this
@@ -25,7 +32,34 @@ class CreateProject extends Component {
         this.handleUpload = this.handleUpload.bind(this);
     }
 
-    
+    // Doctor List Generation
+    async componentDidMount() {
+        const fsDB = firebase.firestore();
+        await fsDB.collection("doctors").get().then(function (querySnapshot) {
+            
+            querySnapshot.forEach(function (doc) {
+                console.log(doc.id, ' => ', doc.data());
+                doctorName = doc.id;
+                docLocation = doc.data().location;
+                console.log("Doctor List: " + docLocation);
+            });
+
+
+        });
+
+    }
+
+
+
+
+    handleLocation = (e) => {
+        e.preventDefault();
+        console.log("Location: " + e.target.value);
+        this.setState({ location: e.target.value });
+
+    }
+
+
 
 
     handleChange = (e) => {
@@ -47,14 +81,14 @@ class CreateProject extends Component {
             console.log("hitt Image");
             const image = e.target.files[0];
             this.setState(() => ({ image }));
-            
+
         }
 
     }
     handleUpload = (e) => {
         e.preventDefault();
 
-        
+
 
         const fd = new FormData();
         fd.append('image', this.state.image, this.state.image.name);
@@ -65,25 +99,26 @@ class CreateProject extends Component {
         })
             .then(res => {
                 storage.ref().child(this.state.image.name).getDownloadURL().then(url => {
-                   
+
                     this.setState({
                         url: url,
                         image: null
                     });
-                   // console.log("HIT" + url);
-            }).then(() => {
-                console.log("HIT State");
-            console.log(this.state);
-            this.props.createProject(this.state);
-            this.props.history.push('/');
-            } );
+                    // console.log("HIT" + url);
+                }).then(() => {
+                    console.log("HIT State");
+                    console.log(this.state);
+                    this.props.createProject(this.state);
+                    this.props.history.push('/');
+                });
 
-            
-        });
 
-       
+            });
+
+
 
     }
+
 
 
 
@@ -92,6 +127,7 @@ class CreateProject extends Component {
     render() {
         const { auth } = this.props;
         if (!auth.uid) return <Redirect to='/signin' />
+
 
         return (
 
@@ -114,6 +150,26 @@ class CreateProject extends Component {
                     <input type="file" onChange={this.handleImageChange} />
 
 
+                    <div className="input-field">
+                        <select className="dropdown-trigger btn z-depth-0" onChange={this.handleLocation}>
+                            <option selected value="regina">Regina</option>
+                            <option value="saskatoon">Saskatoon</option>
+                            <option value="calgary">Calgary</option>
+                            <option value="edmonton">Edmonton</option>
+                        </select>
+
+                    </div>
+
+
+                    <div className="input-field">
+                        <select className="dropdown-trigger btn z-depth-0" onChange={this.handleDoctorchange}>
+                            <option selected value="regina">Regina</option>
+                            <option value="saskatoon">Saskatoon</option>
+                            <option value="calgary">Calgary</option>
+                            <option value="edmonton">Edmonton</option>
+                        </select>
+
+                    </div>
 
                     <div className="input-field">
                         <button className="btn pink lighten-1 z-depth-0" >Create</button>
@@ -129,7 +185,8 @@ class CreateProject extends Component {
 
 const mapStateToProps = (state) => {
     return {
-        auth: state.firebase.auth
+        auth: state.firebase.auth,
+
     }
 }
 
