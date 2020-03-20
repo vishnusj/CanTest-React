@@ -6,7 +6,8 @@ import Navbar from '../src/Components/View/layout/Navbar';
 import Dashboard from '../src/Components/View/dashboard/Dasboard';
 import ProjectDetails from '../src/Components/Controller/projects/ProjectDetails';
 import SignIn from '../src/Components/View/auth/SignIn';
-import SignUp from '../src/Components/View/auth/SignUp'
+import SignUp from '../src/Components/View/auth/SignUp';
+import DocSignUp from '../src/Components/View/auth/DocSignUp';
 import CreateProject from '../src/Components/Controller/projects/CreateProject';
 import userSignIn from '../src/Components/View/auth/userSignIn';
 import doctorSignIn from '../src/Components/View/auth/doctorSignIn';
@@ -30,6 +31,7 @@ class App extends Component {
             <Route path='/usersignin' component = {userSignIn}/>
             <Route path='/doctorsignin' component = {doctorSignIn}/>
             <Route path='/signup' component = {SignUp} />
+            <Route path='/docsignup' component = {DocSignUp} />
             <Route path='/createproject' component = {CreateProject} />
           </Switch>
           

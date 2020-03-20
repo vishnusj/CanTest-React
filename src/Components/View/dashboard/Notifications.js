@@ -11,21 +11,29 @@ const Notifications = (props) => {
                     <span className="card-title">Notifications</span>
                     <ul className="notifications">
                         {notifications && notifications.map(item => {
-                             let useruser = firebase.auth().currentUser;
-                            //console.log("SAME "+item.userId+" "+useruser.uid);
-                             if (item.userId == useruser.uid) {
-                                console.log("SAME "+item.userId+" "+useruser.uid);
-                            return (
-                                <li key={item.id}>
-                                    <span className="pink-text">{item.user} </span>
-                                    <span>{item.content}</span>
-                                    <div className="grey-text note-date">
-                                        {moment(item.time.toDate()).fromNow()}
-                                    </div>
-                                </li>
+                            let useruser = firebase.auth().currentUser;
+                            console.log("Diff "+item.doctor+" "+useruser.uid);
 
-                            )
-                             }
+
+                            if (item.userId == useruser.uid || item.doctor == useruser.uid) {
+                                console.log("SAME " + item.doctor + " " + useruser.uid);
+                                return (
+                                    <li key={item.id}>
+                                        <span className="pink-text">{item.user} </span>
+                                        <span>{item.content}</span>
+                                        <div className="grey-text note-date">
+                                            {moment(item.time.toDate()).fromNow()}
+                                        </div>
+                                    </li>
+
+                                )
+                            }
+
+                           
+
+
+
+
                         })}
                     </ul>
                 </div>

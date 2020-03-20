@@ -4,7 +4,7 @@ import { firestoreConnect } from "react-redux-firebase";
 import { compose } from "redux";
 import { Redirect } from "react-router-dom";
 import moment from 'moment';
-import DoctorList from '../doctor/doctorList';
+
 let projectdetails = null;
 
 class ProjectDetails extends Component {
@@ -16,7 +16,7 @@ class ProjectDetails extends Component {
     }
 
 
-    
+
     handleChange = () => {
         console.log(projectdetails.authorId);
 
@@ -29,11 +29,11 @@ class ProjectDetails extends Component {
             }
         });
 
-        xhr.open("GET", "https://flask-sc-2qevsxcoxq-uc.a.run.app/skin-cancer/get-prediction?image-url=" + projectdetails.url + "&user-id=" + projectdetails.url);
+        xhr.open("GET", "https://flask-sc-2qevsxcoxq-uc.a.run.app/skin-cancer/get-prediction?image-url=" + projectdetails.url + "&user-id=" + projectdetails.authorId);
 
         xhr.send();
 
-
+        document.getElementById("checkup").remove();
 
     }
 
@@ -43,6 +43,7 @@ class ProjectDetails extends Component {
         const { project, auth } = this.props;
 
         if (!auth.uid) return <Redirect to='/signin' />
+        //let useruser = firebase.auth().currentUser;
 
         if (project) {
             projectdetails = project;
@@ -66,10 +67,10 @@ class ProjectDetails extends Component {
 
                             </div>
                         </div>
-                        
+
 
                         <div className="input-field">
-                            <button className="btn pink darken-1 z-depth-0" onClick={this.handleChange} >Check Up</button>
+                            <button id="checkup" className="btn pink darken-1 z-depth-0" onClick={this.handleChange} >Check Up</button>
                         </div>
                     </div>
                 </div>
@@ -86,14 +87,14 @@ class ProjectDetails extends Component {
 
 const mapStateToProps = (state, ownProps) => {
     const id = ownProps.match.params.id;
-   
+
     const projects = state.firestore.data.projects;
     const project = projects ? projects[id] : null;
-    
+
     return {
         project: project,
         auth: state.firebase.auth,
-        
+
 
     }
 }
@@ -102,7 +103,7 @@ export default compose(
     connect(mapStateToProps),
     firestoreConnect([
         { collection: 'projects' },
-        
+
     ])
 
 )(ProjectDetails)

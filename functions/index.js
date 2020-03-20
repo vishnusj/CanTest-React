@@ -23,7 +23,9 @@ exports.projectCreated = functions.firestore
       content: 'Added a new Project',
       user: `${project.authorFirstName} ${project.authorLastName}`,
       time: admin.firestore.FieldValue.serverTimestamp(),
-      userId: `${project.authorId}`
+      userId: `${project.authorId}`,
+      doctorId:  `${project.doctor}`
+
     }
 
     return createNotification(notification);
@@ -42,7 +44,8 @@ exports.projectCreated = functions.firestore
         content: 'Joined the Application',
         user: `${newUser.firstName} ${newUser.lastName}`,
         time: admin.firestore.FieldValue.serverTimestamp(),
-        userId: `${project.authorId}`      
+        userId: `${project.authorId}`,
+        doctorId:  `${project.doctor}`      
       
       }
       return createNotification(notification);

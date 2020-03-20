@@ -5,10 +5,7 @@ import { getFirebase } from 'react-redux-firebase'
 import firebase from 'firebase';
 
 const ProjectSummary = ({ project }) => {
-   // firebase.auth().onAuthStateChanged(function (user) {
-     //   if (project.authorId == user.uid) {
-       //     console.log("Project Author:"+project.authorId);
-
+  
             return (
 
                 <div className="card z-depth-0 project-summary">
@@ -20,9 +17,7 @@ const ProjectSummary = ({ project }) => {
                 </div>
 
             );
-    //    }
-        //return null
-   // });
+   
 }
 
 export default ProjectSummary;
