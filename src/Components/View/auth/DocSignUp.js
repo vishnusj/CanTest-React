@@ -64,7 +64,8 @@ class SignUp extends Component {
                     <div className="input-field">
 
                         <select className="dropdown-trigger btn z-depth-0" onChange={this.handleLocation} id="location">
-                            <option selected value="regina">Regina</option>
+                        <option selected >Please Select your Current Location</option>
+                            <option  value="regina">Regina</option>
                             <option value="saskatoon">Saskatoon</option>
                             <option value="calgary">Calgary</option>
                             <option value="edmonton">Edmonton</option>

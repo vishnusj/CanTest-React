@@ -4,16 +4,16 @@ import { connect } from 'react-redux';
 import { Redirect } from "react-router-dom";
 import axios from 'axios';
 import { storage } from '../../../config/fbConfig';
-import { firestoreConnect } from "react-redux-firebase";
-import ProjectDetails from './ProjectDetails';
 import firebase from 'firebase';
 let doctorName = [];
 let docLocation = [];
 let doctorId = [];
+let responseObj = null;
 
 class CreateProject extends Component {
 
     constructor(props) {
+
 
         super(props);
 
@@ -23,7 +23,9 @@ class CreateProject extends Component {
             location: null,
             title: '',
             content: '',
-            doctor: null
+            doctor: null,
+            accuracy: null,
+            prediction: null
 
         }
 
@@ -40,15 +42,19 @@ class CreateProject extends Component {
 
     // Doctor List Generation
     async componentDidMount() {
+        document.getElementById("progress").style.display = "none";
+        document.getElementById("createButton").style.display = "none";
         const fsDB = firebase.firestore();
         await fsDB.collection("doctorsList").get().then(function (querySnapshot) {
             let i = 0;
             querySnapshot.forEach(function (doc) {
-                // console.log(doc.id, ' => ', doc.data());
-                doctorName[i] = doc.data().firstName;
+                console.log("i: " + i);
+                doctorName[i] = doc.data().firstName+ " " + doc.data().lastName;
                 docLocation[i] = doc.data().location;
                 doctorId[i] = doc.id;
-                i++;
+                console.log("iDoc: " + doctorId[i]);
+                i = i + 1;
+
             });
 
 
@@ -63,19 +69,20 @@ class CreateProject extends Component {
         e.preventDefault();
 
         this.setState({ location: e.target.value });
+        console.log("Location: " + e.target.value);
+
 
         document.getElementById("second-choice").options.length = 0;
-        document.getElementById("second-choice").options[0] = new Option("Please Choose the Doctor");
+        document.getElementById("second-choice").options[0] = new Option("Please Choose the Doctor", null);
         let j = 1;
-        for (var i = 0; i < doctorName.length; i++) {
+        for (let i = 0; i < doctorName.length; i++) {
 
-            //console.log("Doctor List: " + doctorName[i] + " i :"+i);
-            //console.log("Location: " + e.target.value);
-            //console.log("Doc Location: " + docLocation[i]);
             if (docLocation[i] == e.target.value) {
 
-                document.getElementById("second-choice").options[j] = new Option("Dr. " + doctorName[i], doctorId);
-                j++;
+                document.getElementById("second-choice").options[j] = new Option("Dr. " + doctorName[i], doctorId[i], false, false);
+                j = j + 1;
+
+
             }
             else {
 
@@ -118,6 +125,9 @@ class CreateProject extends Component {
     }
 
     handleUpload = (e) => {
+        let progresBar = document.getElementById("progress");
+        progresBar.style.display = "block";
+
         e.preventDefault();
         let acceptable = false;
         let thisUrl = null;
@@ -125,7 +135,8 @@ class CreateProject extends Component {
         fd.append('image', this.state.image, this.state.image.name);
         axios.post('https://us-central1-imageupload-9a880.cloudfunctions.net/uploadFile', fd, {
             onUploadProgress: progressEvent => {
-                console.log('UploadProgress: ' + Math.round((progressEvent.loaded / progressEvent.total) * 100) + '%')
+                //console.log('UploadProgress: ' + Math.round((progressEvent.loaded / progressEvent.total) * 100) + '%')
+
             }
         })
             .then(res => {
@@ -147,32 +158,57 @@ class CreateProject extends Component {
 
                     xhr.addEventListener("readystatechange", function () {
                         if (this.readyState === 4) {
-                            let responseObj = JSON.parse(this.responseText);
+                            responseObj = JSON.parse(this.responseText);
                             acceptable = responseObj.isAcceptable;
                             console.log("this is the response0: " + this.responseText);
-                            console.log("this is the response1: " + responseObj.isAcceptable);
-                            console.log("this is the response2: " + acceptable);
-                            
+                            //  document.getElementById("progress").style.display = "none";
+
 
 
                         }
                     });
 
+                    console.log("https://flask-sc-2qevsxcoxq-uc.a.run.app/skin-cancer/get-prediction?image-url=" + thisUrl + "&user-id=" + useruser.uid);
                     xhr.open("GET", "https://flask-sc-2qevsxcoxq-uc.a.run.app/skin-cancer/get-prediction?image-url=" + thisUrl + "&user-id=" + useruser.uid);
 
                     xhr.send();
 
-                    
 
-                    
+
+
 
                 }).then(setTimeout(() => {
                     this.setState({
-                                
+
                         image: acceptable
                     });
-                    console.log("Check Done");
-                }, 4000));
+                    
+                   
+                    
+
+
+                }, 4000))
+                    .then(setTimeout(() => {
+
+                        if (this.state.image != true) {
+                            window.alert("The Image is not Acceptable. Please use a different Image");
+                            window.location.reload(true);
+
+                        }
+
+                        else {
+                            this.setState({
+                                image: null,
+                                accuracy: responseObj.percentageAccuracy,
+                                prediction: responseObj.predictionType
+                            });
+                            console.log("Check Done Finlyy");
+                            progresBar.style.display = "none";
+                            document.getElementById("createButton").style.display = "block";
+                        }
+
+                    }, 6000));
+                    
 
             });
 
@@ -182,28 +218,13 @@ class CreateProject extends Component {
 
     handleSubmit = (e) => {
         e.preventDefault();
-        console.log(this.state.image);
-        if (this.state.image == true) {
-            this.setState({
-                                
-                image: null
-            });
-
-            //console.log("this is the response: " + acceptable);
+        if (this.state.image != false) {
             this.props.createProject(this.state);
             this.props.history.push('/');
         }
-        else {
-            //console.log("this is the response3: " + acceptable);
-            window.alert("The Image is not Acceptable. Please use a different Image");
-            //this.setState(this.baseState);
-            //this.props.history.push('/createproject');
-        }
 
 
-        //this.props.createProject(this.state);
-        //this.props.history.push('/');
-      }
+    }
 
 
 
@@ -237,7 +258,7 @@ class CreateProject extends Component {
 
                     <div className="input-field">
                         <select className="dropdown-trigger btn z-depth-0" onChange={this.handleLocation} id="location">
-                            <option>Choose the Location</option>
+                            <option value="null">Choose the Location</option>
                             <option value="regina">Regina</option>
                             <option value="saskatoon">Saskatoon</option>
                             <option value="calgary">Calgary</option>
@@ -249,17 +270,23 @@ class CreateProject extends Component {
 
                     <div className="input-field">
                         <select className="dropdown-trigger btn z-depth-0" onChange={this.handledoctorChange} id="second-choice">
-                            <option>Please choose from above</option>
+                            <option value="null">Please choose from above</option>
                         </select>
 
                     </div>
 
                     <div className="input-field">
-                        <button className="btn pink lighten-1 z-depth-0" onClick={this.handleUpload} >Check</button>
+                        <button className="btn pink lighten-1 z-depth-0"
+                            onClick={this.handleUpload} >
+                            Check
+                            </button>
+                    </div>
+                    <div className="progress" id="progress">
+                        <div className="indeterminate"  ></div>
                     </div>
 
                     <div className="input-field">
-                        <button className="btn pink lighten-1 z-depth-0" >Create</button>
+                        <button className="btn pink lighten-1 z-depth-0" id="createButton">Create</button>
                     </div>
                 </form>
             </div>

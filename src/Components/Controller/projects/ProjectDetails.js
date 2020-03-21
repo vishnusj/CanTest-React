@@ -17,25 +17,6 @@ class ProjectDetails extends Component {
 
 
 
-    handleChange = () => {
-        console.log(projectdetails.authorId);
-
-        var xhr = new XMLHttpRequest();
-        xhr.withCredentials = false;
-
-        xhr.addEventListener("readystatechange", function () {
-            if (this.readyState === 4) {
-                console.log("this is the response: " + this.responseText);
-            }
-        });
-
-        xhr.open("GET", "https://flask-sc-2qevsxcoxq-uc.a.run.app/skin-cancer/get-prediction?image-url=" + projectdetails.url + "&user-id=" + projectdetails.authorId);
-
-        xhr.send();
-
-        document.getElementById("checkup").remove();
-
-    }
 
     render() {
 
@@ -43,35 +24,47 @@ class ProjectDetails extends Component {
         const { project, auth } = this.props;
 
         if (!auth.uid) return <Redirect to='/signin' />
-        //let useruser = firebase.auth().currentUser;
-
+        
         if (project) {
             projectdetails = project;
-
+            console.log(project.prediction);
             return (
 
 
                 <div className="container section project-details">
                     <div className="card z-depth-0">
                         <div className="card-content">
-                            <span className="card-title">{project.title}</span>
+                            <span className="card-title">Title: {project.title}</span>
                             <p>{project.content}</p>
                         </div>
-                        <div className="card-action gret lighten-4 grey-text">
-                            <div>Posted by {project.authorFirstName} {project.authorLastName}</div>
-                            <div>{moment(project.createdAt.toDate()).calendar()}</div>
-                            <fieldset>
-                                <img className="materialboxed" width="300" src={project.url} />
-                            </fieldset>
-                            <div>
-
+                        <div className="card-content">
+                            <span className="card-title">Test Results</span>
+                            <p>Prediction Made: {project.prediction}</p>
+                            <p>Accuracy: {project.accuracy}</p>
+                        </div>
+                        
+                        <div className="card-content">
+                            <div className="input-field">
+                                <label htmlFor="title">Notes</label>
+                                <input type="text" id="notes" onChange={this.handleChange} />
                             </div>
                         </div>
 
 
-                        <div className="input-field">
-                            <button id="checkup" className="btn pink darken-1 z-depth-0" onClick={this.handleChange} >Check Up</button>
+                        <div className="card-action gret lighten-4 grey-text">
+                            <div>Posted by {project.authorFirstName} {project.authorLastName}</div>
+                            <div>{moment(project.createdAt.toDate()).calendar()}</div>
+                            <div>{project.location}</div>
+
+
+
+                            <fieldset>
+                                Image
+                                <img className="materialboxed" width="300" src={project.url} />
+                            </fieldset>
+
                         </div>
+
                     </div>
                 </div>
 
@@ -94,7 +87,6 @@ const mapStateToProps = (state, ownProps) => {
     return {
         project: project,
         auth: state.firebase.auth,
-
 
     }
 }
