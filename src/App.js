@@ -9,6 +9,8 @@ import SignIn from '../src/Components/View/auth/SignIn';
 import SignUp from '../src/Components/View/auth/SignUp';
 import DocSignUp from '../src/Components/View/auth/DocSignUp';
 import CreateProject from '../src/Components/Controller/projects/CreateProject';
+import CreateNote from '../src/Components/Controller/notes/CreateNote';
+import NotesDashboard from '../src/Components/Controller/notes/NotesDashboard';
 import userSignIn from '../src/Components/View/auth/userSignIn';
 import doctorSignIn from '../src/Components/View/auth/doctorSignIn';
 
@@ -33,6 +35,8 @@ class App extends Component {
             <Route path='/signup' component = {SignUp} />
             <Route path='/docsignup' component = {DocSignUp} />
             <Route path='/createproject' component = {CreateProject} />
+            <Route path='/createnote' component = {CreateNote} />
+            <Route path='/notedashboard' component = {NotesDashboard}/>
           </Switch>
           
         </div>

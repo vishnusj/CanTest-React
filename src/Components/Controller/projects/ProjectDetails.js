@@ -4,18 +4,14 @@ import { firestoreConnect } from "react-redux-firebase";
 import { compose } from "redux";
 import { Redirect } from "react-router-dom";
 import moment from 'moment';
-
-let projectdetails = null;
+import { Link } from 'react-router-dom';
 
 class ProjectDetails extends Component {
-    constructor() {
-        super();
-
+    constructor(props) {
+        super(props);
 
 
     }
-
-
 
 
     render() {
@@ -24,10 +20,10 @@ class ProjectDetails extends Component {
         const { project, auth } = this.props;
 
         if (!auth.uid) return <Redirect to='/signin' />
-        
+
         if (project) {
-            projectdetails = project;
-            console.log(project.prediction);
+            console.log("Project" + project.title);
+
             return (
 
 
@@ -42,13 +38,24 @@ class ProjectDetails extends Component {
                             <p>Prediction Made: {project.prediction}</p>
                             <p>Accuracy: {project.accuracy}</p>
                         </div>
-                        
                         <div className="card-content">
-                            <div className="input-field">
-                                <label htmlFor="title">Notes</label>
-                                <input type="text" id="notes" onChange={this.handleChange} />
-                            </div>
+                            <button className="btn black lighten-1 z-depth-0"><Link to={{
+                                pathname: '/createnote',
+                                aboutProps: {
+                                    id: window.location.href
+                                }
+                            }} >Add Note</Link></button>
+
+                            <button className="btn black lighten-1 z-depth-0"><Link to={{
+                                pathname: '/notedashboard',
+                                aboutProps: {
+                                    id: window.location.href
+                                }
+                            }} >View Notes</Link></button>
+
+
                         </div>
+
 
 
                         <div className="card-action gret lighten-4 grey-text">
@@ -57,13 +64,13 @@ class ProjectDetails extends Component {
                             <div>{project.location}</div>
 
 
-
-                            <fieldset>
-                                Image
-                                <img className="materialboxed" width="300" src={project.url} />
-                            </fieldset>
-
                         </div>
+                        <fieldset>
+                            Image
+                                <img className="materialboxed" width="300" src={project.url} />
+                        </fieldset>
+
+
 
                     </div>
                 </div>
@@ -78,15 +85,18 @@ class ProjectDetails extends Component {
     }
 }
 
+
+
+
 const mapStateToProps = (state, ownProps) => {
     const id = ownProps.match.params.id;
-
     const projects = state.firestore.data.projects;
     const project = projects ? projects[id] : null;
 
     return {
         project: project,
         auth: state.firebase.auth,
+
 
     }
 }
@@ -96,6 +106,6 @@ export default compose(
     firestoreConnect([
         { collection: 'projects' },
 
-    ])
+    ]),
 
 )(ProjectDetails)
