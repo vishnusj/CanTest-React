@@ -1,7 +1,10 @@
 import React, { Component } from 'react'
 import { connect } from 'react-redux'
 import { createNote } from '../../../store/actions/noteAction';
-import { Redirect } from 'react-router-dom'
+import { Redirect } from 'react-router-dom';
+import firebase from 'firebase';
+let username = [];
+let userId = [];
 
 class CreateNote extends Component {
 
@@ -12,25 +15,55 @@ class CreateNote extends Component {
         this.state = {
             title: '',
             content: '',
-            projectId: null
+            projectId: null,
+            authorName: ''
         }
 
     }
-    
+
+    // Note List Generation
+    async componentDidMount() {
+
+        const fsDB = firebase.firestore();
+        await fsDB.collection("users").get().then(function (querySnapshot) {
+            let i = 0;
+            querySnapshot.forEach(function (doc) {
+
+                username[i] = doc.data().firstName + " " + doc.data().lastName;
+                userId[i] = doc.id;
+                i = i + 1;
+
+            });
+
+
+        });
+
+    }
+
     handleChange = (e) => {
+        const useruser = firebase.auth().currentUser;
         this.projectIdn = this.props.location.aboutProps.id.substr(this.props.location.aboutProps.id.lastIndexOf('/') + 1);
-        console.log("Test: "+this.projectIdn);
+        let author = null;
+        for (let i = 0; i < username.length; i++) {
+            if (useruser.uid == userId[i]) {
+                author = username[i];
+            }
+        }
+
         this.setState({
+            projectId: this.projectIdn,
+            authorName: author,
             [e.target.id]: e.target.value,
-            projectId: this.projectIdn
-            
+
         })
+
     }
     handleSubmit = (e) => {
         e.preventDefault();
-        
+
+
         this.props.createNote(this.state);
-        this.props.history.push('/project/:'+this.projectIdn);
+        this.props.history.push('/project/' + this.projectIdn);
     }
     render() {
         const { auth } = this.props;
@@ -48,7 +81,7 @@ class CreateNote extends Component {
                     </div>
                     <div className="input-field">
                         <textarea id="content" className="materialize-textarea" onChange={this.handleChange}></textarea>
-                        <label htmlFor="content">Content</label>
+                        <label htmlFor="content">Note Content</label>
                     </div>
                     <div className="input-field">
                         <button className="btn pink lighten-1">Create</button>

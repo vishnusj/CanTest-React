@@ -5,6 +5,8 @@ import { Redirect } from "react-router-dom";
 import axios from 'axios';
 import { storage } from '../../../config/fbConfig';
 import firebase from 'firebase';
+
+//Globals
 let doctorName = [];
 let docLocation = [];
 let doctorId = [];
@@ -49,7 +51,7 @@ class CreateProject extends Component {
             let i = 0;
             querySnapshot.forEach(function (doc) {
                 console.log("i: " + i);
-                doctorName[i] = doc.data().firstName+ " " + doc.data().lastName;
+                doctorName[i] = doc.data().firstName + " " + doc.data().lastName;
                 docLocation[i] = doc.data().location;
                 doctorId[i] = doc.id;
                 console.log("iDoc: " + doctorId[i]);
@@ -129,18 +131,23 @@ class CreateProject extends Component {
         progresBar.style.display = "block";
 
         e.preventDefault();
-        let acceptable = false;
+        let isBlurry = false;
+        let isLowRes = false;
         let thisUrl = null;
         const fd = new FormData();
-        fd.append('image', this.state.image, this.state.image.name);
+        const useruser = firebase.auth().currentUser;
+        const d = new Date;
+        let imageName = useruser.uid + d.getTime();
+        imageName = imageName.replace(/[&\/\\#,+()$~% -'":*?<>{}]/g, '');
+        console.log("Image Name: " + imageName);
+        fd.append('image', this.state.image, imageName);
         axios.post('https://us-central1-imageupload-9a880.cloudfunctions.net/uploadFile', fd, {
             onUploadProgress: progressEvent => {
-                //console.log('UploadProgress: ' + Math.round((progressEvent.loaded / progressEvent.total) * 100) + '%')
 
             }
         })
             .then(res => {
-                storage.ref().child(this.state.image.name).getDownloadURL().then(url => {
+                storage.ref().child(imageName).getDownloadURL().then(url => {
                     thisUrl = url;
                     this.setState({
                         url: url,
@@ -153,22 +160,22 @@ class CreateProject extends Component {
                     var xhr = new XMLHttpRequest();
                     xhr.withCredentials = false;
 
-                    let useruser = firebase.auth().currentUser;
+                    const useruser = firebase.auth().currentUser;
 
 
                     xhr.addEventListener("readystatechange", function () {
                         if (this.readyState === 4) {
                             responseObj = JSON.parse(this.responseText);
-                            acceptable = responseObj.isAcceptable;
-                            console.log("this is the response0: " + this.responseText);
-                            //  document.getElementById("progress").style.display = "none";
 
+                            isBlurry = responseObj.isBlurry;
+                            isLowRes = responseObj.isLowRes;
 
 
                         }
                     });
 
-                    console.log("https://flask-sc-2qevsxcoxq-uc.a.run.app/skin-cancer/get-prediction?image-url=" + thisUrl + "&user-id=" + useruser.uid);
+                    //console.log("https://flask-sc-2qevsxcoxq-uc.a.run.app/skin-cancer/get-prediction?image-url=" + thisUrl + "&user-id=" + useruser.uid);
+
                     xhr.open("GET", "https://flask-sc-2qevsxcoxq-uc.a.run.app/skin-cancer/get-prediction?image-url=" + thisUrl + "&user-id=" + useruser.uid);
 
                     xhr.send();
@@ -178,37 +185,30 @@ class CreateProject extends Component {
 
 
                 }).then(setTimeout(() => {
-                    this.setState({
 
-                        image: acceptable
-                    });
-                    
-                   
-                    
+                    if (isBlurry == true) {
+                        window.alert("The Image is seems to be Blurry. Please use a different Image");
+                        window.location.reload(true);
 
+                    }
 
-                }, 4000))
-                    .then(setTimeout(() => {
+                    else if (isLowRes == true) {
+                        window.alert("The Image resolution is too low. The minimum resolution should be 300x300. Please use a different Image");
+                        window.location.reload(true);
+                    }
 
-                        if (this.state.image != true) {
-                            window.alert("The Image is not Acceptable. Please use a different Image");
-                            window.location.reload(true);
+                    else {
+                        this.setState({
+                            accuracy: responseObj.percentageAccuracy,
+                            prediction: responseObj.predictionType
+                        });
+                        console.log("Check Done Finlyy");
+                        progresBar.style.display = "none";
+                        document.getElementById("createButton").style.display = "block";
+                    }
 
-                        }
+                }, 10000));
 
-                        else {
-                            this.setState({
-                                image: null,
-                                accuracy: responseObj.percentageAccuracy,
-                                prediction: responseObj.predictionType
-                            });
-                            console.log("Check Done Finlyy");
-                            progresBar.style.display = "none";
-                            document.getElementById("createButton").style.display = "block";
-                        }
-
-                    }, 6000));
-                    
 
             });
 
@@ -242,23 +242,24 @@ class CreateProject extends Component {
 
 
                 <form onSubmit={this.handleSubmit} className="white">
-                    <h5 className="grey-text text-darken-3">Create New Project</h5>
+                    <h5 className="grey-text text-darken-3">Create New Test</h5>
 
                     <div className="input-field">
-                        <label htmlFor="title">Title</label>
+                        <label htmlFor="title">Test Title</label>
                         <input type="text" id="title" onChange={this.handleChange} />
                     </div>
                     <div className="input-field">
-                        <label htmlFor="content">Project Content</label>
+                        <label htmlFor="content">Test Details</label>
                         <textarea id="content" className="materialize-textarea" onChange={this.handleChange} />
                     </div>
-
-                    <input type="file" onChange={this.handleImageChange} />
-
+                    <div className="black-text text-darken-10">
+                        Choose Image : -
+                        <input id = "imagebtn" type="file" onChange={this.handleImageChange} />
+                    </div>
 
                     <div className="input-field">
                         <select className="dropdown-trigger btn z-depth-0" onChange={this.handleLocation} id="location">
-                            <option value="null">Choose the Location</option>
+                            <option value="null">Select the Current Location</option>
                             <option value="regina">Regina</option>
                             <option value="saskatoon">Saskatoon</option>
                             <option value="calgary">Calgary</option>
@@ -270,7 +271,7 @@ class CreateProject extends Component {
 
                     <div className="input-field">
                         <select className="dropdown-trigger btn z-depth-0" onChange={this.handledoctorChange} id="second-choice">
-                            <option value="null">Please choose from above</option>
+                            <option value="null">Please Select Location first</option>
                         </select>
 
                     </div>
@@ -278,7 +279,7 @@ class CreateProject extends Component {
                     <div className="input-field">
                         <button className="btn pink lighten-1 z-depth-0"
                             onClick={this.handleUpload} >
-                            Check
+                            Save Data
                             </button>
                     </div>
                     <div className="progress" id="progress">
@@ -286,10 +287,10 @@ class CreateProject extends Component {
                     </div>
 
                     <div className="input-field">
-                        <button className="btn pink lighten-1 z-depth-0" id="createButton">Create</button>
+                        <button className="btn pink lighten-1 z-depth-0" id="createButton">Create Test</button>
                     </div>
                 </form>
-            </div>
+            </div >
         )
     }
 }

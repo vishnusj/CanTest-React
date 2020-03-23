@@ -8,11 +8,30 @@ admin.initializeApp(functions.config().firebase);
 
 const createNotification = (notification) => {
   return admin.firestore().collection('notifications').add(notification)
-  .then(doc => console.log('Notification Added', doc))
+    .then(doc => console.log('Notification Added', doc))
 }
 
 
-exports.projectCreated = functions.firestore
+exports.noteCreated = functions.firestore
+  .document('notesList/{noteId}')
+  .onCreate(doc => {
+
+    const note = doc.data();
+    const notification = {
+      content: 'has a new Note',
+      user: `${note.authorName}`,
+      time: admin.firestore.FieldValue.serverTimestamp(),
+      project: `${note.projectId}`,
+      noteContent:  `${note.content}`,
+      noteTitle:  `${note.title}`
+    }
+
+    return createNotification(notification);
+
+  });
+
+
+  exports.projectCreated = functions.firestore
   .document('projects/{projectId}')
   .onCreate(doc => {
 
@@ -22,7 +41,7 @@ exports.projectCreated = functions.firestore
       user: `${project.authorFirstName} ${project.authorLastName}`,
       time: admin.firestore.FieldValue.serverTimestamp(),
       userId: `${project.authorId}`,
-      doctorId:  `${project.doctor}`
+      doctorId: `${project.doctor}`
 
     }
 
@@ -31,28 +50,28 @@ exports.projectCreated = functions.firestore
   });
 
 
-  exports.userJoined = functions.auth.user()
+exports.userJoined = functions.auth.user()
   .onCreate(user => {
 
     return admin.firestore().collection('users')
-    .doc(user.uid).get().then(doc => {
+      .doc(user.uid).get().then(doc => {
 
-      const newUser = doc.data();
-      const notification  = {
-        content: 'Joined the Application',
-        user: `${newUser.firstName} ${newUser.lastName}`,
-        time: admin.firestore.FieldValue.serverTimestamp(),
-        userId: `${project.authorId}`,
-        doctorId:  `${project.doctor}`      
-      
-      }
-      return createNotification(notification);
+        const newUser = doc.data();
+        const notification = {
+          content: 'Joined the Application',
+          user: `${newUser.firstName} ${newUser.lastName}`,
+          time: admin.firestore.FieldValue.serverTimestamp(),
+          userId: `${project.authorId}`,
+          doctorId: `${project.doctor}`
 
-    })
-    
+        }
+        return createNotification(notification);
+
+      })
+
 
   });
 
 
-  
+
 

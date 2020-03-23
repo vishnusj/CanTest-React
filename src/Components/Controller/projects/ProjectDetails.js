@@ -5,6 +5,7 @@ import { compose } from "redux";
 import { Redirect } from "react-router-dom";
 import moment from 'moment';
 import { Link } from 'react-router-dom';
+import NoteNotification from '../notes/NoteNotification';
 
 class ProjectDetails extends Component {
     constructor(props) {
@@ -17,7 +18,7 @@ class ProjectDetails extends Component {
     render() {
 
 
-        const { project, auth } = this.props;
+        const { project, auth, notifications } = this.props;
 
         if (!auth.uid) return <Redirect to='/signin' />
 
@@ -28,41 +29,54 @@ class ProjectDetails extends Component {
 
 
                 <div className="container section project-details">
+
                     <div className="card z-depth-0">
                         <div className="card-content">
-                            <span className="card-title">Title: {project.title}</span>
-                            <p>{project.content}</p>
+                            <div className="card-panel cyan lighten-4">
+                                <span className="card-title">Title: {project.title}</span>
+                                <p>{project.content}</p>
+                            </div>
                         </div>
                         <div className="card-content">
-                            <span className="card-title">Test Results</span>
-                            <p>Prediction Made: {project.prediction}</p>
-                            <p>Accuracy: {project.accuracy}</p>
+                            <div className="card-panel cyan lighten-4">
+                                <span className="card-title">Test Results</span>
+                                <p>Prediction Made: {project.prediction}</p>
+                                <p>Accuracy: {project.accuracy}</p>
+                            </div>
                         </div>
+
+                        <NoteNotification notifications={notifications} />
+
                         <div className="card-content">
-                            <button className="btn black lighten-1 z-depth-0"><Link to={{
-                                pathname: '/createnote',
-                                aboutProps: {
-                                    id: window.location.href
-                                }
-                            }} >Add Note</Link></button>
+                            <div className="card-panel cyan lighten-4">
+                                
+                                <button className="btn black lighten-1 z-depth-0"><Link to={{
+                                    pathname: '/createnote',
+                                    aboutProps: {
+                                        id: window.location.href
+                                    }
+                                }} >Add Note</Link></button>
 
-                            <button className="btn black lighten-1 z-depth-0"><Link to={{
-                                pathname: '/notedashboard',
-                                aboutProps: {
-                                    id: window.location.href
-                                }
-                            }} >View Notes</Link></button>
+                                <span>  </span>
 
+                                <button className="btn black lighten-1 z-depth-0"><Link to={{
+                                    pathname: '/notedashboard',
+                                    aboutProps: {
+                                        id: window.location.href
+                                    }
+                                }} >View Notes</Link></button>
 
+                            </div>
                         </div>
 
 
 
                         <div className="card-action gret lighten-4 grey-text">
-                            <div>Posted by {project.authorFirstName} {project.authorLastName}</div>
-                            <div>{moment(project.createdAt.toDate()).calendar()}</div>
-                            <div>{project.location}</div>
-
+                            <div className="card-panel green lighten-4">
+                                <div className="black-text text-darken-2">Posted by {project.authorFirstName} {project.authorLastName}</div>
+                                <div>{moment(project.createdAt.toDate()).calendar()}</div>
+                                <div>{project.location}</div>
+                            </div>
 
                         </div>
                         <fieldset>
@@ -96,6 +110,7 @@ const mapStateToProps = (state, ownProps) => {
     return {
         project: project,
         auth: state.firebase.auth,
+        notifications: state.firestore.ordered.notifications
 
 
     }
@@ -105,6 +120,7 @@ export default compose(
     connect(mapStateToProps),
     firestoreConnect([
         { collection: 'projects' },
+        { collection: 'notifications', limit: 3, orderBy: ['time', 'desc'] }
 
     ]),
 

@@ -7,10 +7,12 @@ import { Redirect } from "react-router-dom";
 import firebase from 'firebase';
 import moment from 'moment';
 
+//Globals
 let noteContent = [];
 let noteTitle = [];
 let noteCreatedAt = [];
 let noteProject = [];
+let noteAuthor = [];
 
 
 class NotesDashboard extends Component {
@@ -23,7 +25,7 @@ class NotesDashboard extends Component {
     }
 
 
-    // Doctor List Generation
+    // Note List Generation
     async componentDidMount() {
 
         const fsDB = firebase.firestore();
@@ -33,9 +35,9 @@ class NotesDashboard extends Component {
 
                 noteTitle[i] = doc.data().title;
                 noteContent[i] = doc.data().content;
-                noteCreatedAt[i] = doc.createdAt;
+                noteCreatedAt[i] = doc.data().createdAt;
                 noteProject[i] = doc.data().projectId;
-                //console.log("Logs: " + noteTitle[i]);
+                noteAuthor[i] =  doc.data().authorName;
                 i = i + 1;
 
             });
@@ -58,7 +60,7 @@ class NotesDashboard extends Component {
         console.log("Logs: " + noteTitle.length);
         if (noteTitle.length != 0) {
 
-            for (let i = 0; i < noteTitle.length; i++) {
+            for (let i = noteTitle.length; i >= 0; i--) {
                 if (noteProject[i] == this.projectIdn)
                     this.rows.push(
                         <div className="dashboard container">
@@ -69,8 +71,8 @@ class NotesDashboard extends Component {
                                         <div className="card-content grey-text text-darken-3">
                                             <span className="card-title">{noteTitle[i]}</span>
                                             <p>Content : {noteContent[i]} </p>
-                                            <p>Project ID: {noteProject[i]}</p>
-                                            <p className="grey-text">{noteCreatedAt[i]}</p>
+                                            <p>Author: {noteAuthor[i]}</p>
+                                            <p>Created At: {moment(noteCreatedAt[i].toDate()).calendar()}</p>
                                         </div>
                                     </div>
 
@@ -86,7 +88,7 @@ class NotesDashboard extends Component {
             this.rows.length = 3;
 
             return (
-                <div>{this.rows}</div>
+                <div>{this.rows.sort()}</div>
             );
 
 
