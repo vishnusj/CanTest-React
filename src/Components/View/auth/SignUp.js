@@ -10,24 +10,34 @@ class SignUp extends SignUpInterface {
         password: '',
         firstName: '',
         lastName: '',
-        isDoctor: false
+
     }
 
-    
+
     handleChange = (e) => {
         this.setState({
             [e.target.id]: e.target.value
 
         });
+       
     }
     handleSubmit = (e) => {
         e.preventDefault();
-        console.log(this.state);
-        this.props.signUp(this.state);
+        
+        if (this.state.firstName.length == 0)
+            window.alert("First name cannot be empty");
+        else if (this.state.lastName.length == 0)
+            window.alert("Last name cannot be empty");
+        else {
+            console.log(this.state);
+            this.props.signUp(this.state);
+        }
     }
     render() {
+        
         const { auth, authError } = this.props;
         if (auth.uid) return <Redirect to='/' />
+        
         return (
             <div className="conatiner">
                 <form onSubmit={this.handleSubmit} className="white">
@@ -49,7 +59,7 @@ class SignUp extends SignUpInterface {
                         <input type="text" id="lastName" onChange={this.handleChange} />
                     </div>
 
-                   
+
 
 
                     <div className="input-field">

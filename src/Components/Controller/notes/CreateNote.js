@@ -5,7 +5,8 @@ import { Redirect } from 'react-router-dom';
 import firebase from 'firebase';
 let username = [];
 let userId = [];
-
+let docName = [];
+let docId = [];
 class CreateNote extends Component {
 
     constructor(props) {
@@ -38,17 +39,41 @@ class CreateNote extends Component {
 
         });
 
+        await fsDB.collection("doctorsList").get().then(function (querySnapshot) {
+            let i = 0;
+            querySnapshot.forEach(function (doc) {
+
+                docName[i] = doc.data().firstName + " " + doc.data().lastName;
+                docId[i] = doc.id;
+                i = i + 1;
+
+            });
+
+
+        });
+
     }
 
     handleChange = (e) => {
         const useruser = firebase.auth().currentUser;
         this.projectIdn = this.props.location.aboutProps.id.substr(this.props.location.aboutProps.id.lastIndexOf('/') + 1);
         let author = null;
+        
         for (let i = 0; i < username.length; i++) {
             if (useruser.uid == userId[i]) {
                 author = username[i];
+                console.log("User Hit:"+author);
             }
         }
+        for (let i = 0; i < docName.length; i++){
+
+             if(useruser.uid == docId[i]){
+                author = docName[i];
+                console.log("Doc Hit:"+author);
+            }
+        }
+
+       
 
         this.setState({
             projectId: this.projectIdn,

@@ -1,5 +1,3 @@
-//import { getFirebase, firebaseReducer } from "react-redux-firebase"
-
 export const signIn = (credentials) => {
     return (dispatch, getState, { getFirebase }) => {
         const firebase = getFirebase();

@@ -10,13 +10,13 @@ class SignUp extends SignUpInterface {
         password: '',
         firstName: '',
         lastName: '',
-        location: null
+        location: ''
 
     }
 
     handleLocation = (e) => {
         e.preventDefault();
-        
+
         this.setState({ location: e.target.value });
 
 
@@ -34,8 +34,16 @@ class SignUp extends SignUpInterface {
     }
     handleSubmit = (e) => {
         e.preventDefault();
-        console.log(this.state);
-        this.props.docsignUp(this.state);
+        if (this.state.firstName.length == 0)
+            window.alert("First name cannot be empty");
+        else if (this.state.lastName.length == 0)
+            window.alert("Last name cannot be empty");
+        else if (this.state.location.length == 0)
+            window.alert("Location cannot be empty");
+        else {
+            console.log(this.state);
+            this.props.docsignUp(this.state);
+        }
     }
     render() {
         const { auth, authError } = this.props;
@@ -64,8 +72,8 @@ class SignUp extends SignUpInterface {
                     <div className="input-field">
 
                         <select className="dropdown-trigger btn z-depth-0" onChange={this.handleLocation} id="location">
-                        <option selected >Please Select your Current Location</option>
-                            <option  value="regina">Regina</option>
+                            <option selected >Please Select your Current Location</option>
+                            <option value="regina">Regina</option>
                             <option value="saskatoon">Saskatoon</option>
                             <option value="calgary">Calgary</option>
                             <option value="edmonton">Edmonton</option>

@@ -17,7 +17,7 @@ const Notifications = (props) => {
 
 
                             if (item.userId == useruser.uid) {
-                                console.log("SAME " + item.doctor + " " + useruser.uid);
+                                
                                 return (
                                     <div className="card-panel red accent-1">
                                     <li key={item.id}>
@@ -33,7 +33,7 @@ const Notifications = (props) => {
                             }
 
                             if (item.doctorId == useruser.uid) {
-                                console.log("SAME " + item.doctor + " " + useruser.uid);
+                               
                                 return (
                                     <li key={item.id}>
                                         <span className="pink-text">{item.user} </span>

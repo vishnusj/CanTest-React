@@ -12,10 +12,19 @@ class ProjectDetails extends ProjectDetailsInterface {
     constructor(props) {
         super(props);
 
-
+        this.value = null;
+        this.color = null;
     }
 
+    colourChange = (e) => {
+        let colour = document.getElementById("result");
+        console.log("Value: "+this.value);
+        if (this.value == 'malignant') {
+            colour.className = "card-panel orange lighten-4";
+        }
+    }
 
+    
     render() {
 
 
@@ -24,7 +33,17 @@ class ProjectDetails extends ProjectDetailsInterface {
         if (!auth.uid) return <Redirect to='/signin' />
 
         if (project) {
-            console.log("Project" + project.title);
+
+           
+            this.value = project.prediction;
+            if (this.value == 'malignant') {
+                this.color = "card-panel red accent-1";
+            }
+            else{
+                this.color = "card-panel green lighten-4";
+            }
+
+
 
             return (
 
@@ -39,10 +58,11 @@ class ProjectDetails extends ProjectDetailsInterface {
                             </div>
                         </div>
                         <div className="card-content">
-                            <div className="card-panel cyan lighten-4">
+
+                            <div className={this.color} >
                                 <span className="card-title">Test Results</span>
-                                <p>Prediction Made: {project.prediction}</p>
-                                <p>Accuracy: {project.accuracy}</p>
+                                <p>Prediction Made: <b>{project.prediction.toUpperCase()}</b></p>
+                                <p>Accuracy:  <b>{project.accuracy}</b></p>
                             </div>
                         </div>
 
@@ -50,7 +70,7 @@ class ProjectDetails extends ProjectDetailsInterface {
 
                         <div className="card-content">
                             <div className="card-panel cyan lighten-4">
-                                
+
                                 <button className="btn black lighten-1 z-depth-0"><Link to={{
                                     pathname: '/createnote',
                                     aboutProps: {
