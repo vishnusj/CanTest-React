@@ -1,10 +1,10 @@
-import React, { Component } from 'react'
+import React from 'react'
 import { Redirect } from "react-router-dom";
 import { connect } from 'react-redux'
 import { signUp } from '../../../store/actions/authActions';
+import SignUpInterface from './SignUpInterface'
 
-
-class SignUp extends Component {
+class SignUp extends SignUpInterface {
     state = {
         email: '',
         password: '',

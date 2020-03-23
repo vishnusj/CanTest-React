@@ -48,9 +48,6 @@ const Notifications = (props) => {
 
 
 
-
-
-
                         })}
                     </ul>
                 </div>

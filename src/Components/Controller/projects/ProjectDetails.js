@@ -6,8 +6,9 @@ import { Redirect } from "react-router-dom";
 import moment from 'moment';
 import { Link } from 'react-router-dom';
 import NoteNotification from '../notes/NoteNotification';
+import ProjectDetailsInterface from './ProjectDetailsInterface';
 
-class ProjectDetails extends Component {
+class ProjectDetails extends ProjectDetailsInterface {
     constructor(props) {
         super(props);
 
