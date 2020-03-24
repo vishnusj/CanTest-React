@@ -4,7 +4,7 @@ import { connect } from "react-redux";
 import { signOut } from '../../../store/actions/authActions'
 
 const SignedInLinks = (props) => {
-    console.log("Initials " + props.profile.initials);
+    
     let initials = props.profile.initials ? props.profile.initials : "Dr";
     return (
 

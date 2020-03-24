@@ -9,12 +9,7 @@ import NoteNotification from '../notes/NoteNotification';
 import ProjectDetailsInterface from './ProjectDetailsInterface';
 
 class ProjectDetails extends ProjectDetailsInterface {
-    constructor(props) {
-        super(props);
-
-        this.value = null;
-        this.color = null;
-    }
+   
 
     colourChange = (e) => {
         let colour = document.getElementById("result");

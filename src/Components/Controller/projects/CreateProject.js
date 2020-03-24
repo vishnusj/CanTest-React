@@ -5,6 +5,7 @@ import { Redirect } from "react-router-dom";
 import axios from 'axios';
 import { storage } from '../../../config/fbConfig';
 import firebase from 'firebase';
+import CreateProjectInterface from './CreateProjectInterface';
 
 //Globals
 let doctorName = [];
@@ -12,36 +13,9 @@ let docLocation = [];
 let doctorId = [];
 let responseObj = null;
 
-class CreateProject extends Component {
+class CreateProject extends CreateProjectInterface {
 
-    constructor(props) {
-
-
-        super(props);
-
-        this.state = {
-            image: null,
-            url: '',
-            location: null,
-            title: '',
-            content: '',
-            doctor: null,
-            accuracy: null,
-            prediction: null
-
-        }
-
-        this.handleChange = this
-            .handleChange
-            .bind(this);
-        this.handleUpload = this.handleUpload.bind(this);
-
-        // preserve the initial state in a new object
-        this.baseState = this.state;
-    }
-
-
-
+    
     // Doctor List Generation
     async componentDidMount() {
         document.getElementById("progress").style.display = "none";

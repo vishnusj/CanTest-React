@@ -5,14 +5,7 @@ import { signUp } from '../../../store/actions/authActions';
 import SignUpInterface from './SignUpInterface'
 
 class SignUp extends SignUpInterface {
-    state = {
-        email: '',
-        password: '',
-        firstName: '',
-        lastName: '',
-
-    }
-
+    
 
     handleChange = (e) => {
         this.setState({

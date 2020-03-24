@@ -4,15 +4,8 @@ import { connect } from 'react-redux'
 import SignUpInterface from './SignUpInterface'
 import { docsignUp } from '../../../store/actions/authActions';
 
-class SignUp extends SignUpInterface {
-    state = {
-        email: '',
-        password: '',
-        firstName: '',
-        lastName: '',
-        location: ''
-
-    }
+class DocSignUp extends SignUpInterface {
+    
 
     handleLocation = (e) => {
         e.preventDefault();
@@ -110,4 +103,4 @@ const mapDispatchToProps = (dispatch) => {
     }
 }
 
-export default connect(mapStateToProps, mapDispatchToProps)(SignUp);
+export default connect(mapStateToProps, mapDispatchToProps)(DocSignUp);

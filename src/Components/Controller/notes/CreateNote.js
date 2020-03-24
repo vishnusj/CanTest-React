@@ -3,24 +3,14 @@ import { connect } from 'react-redux'
 import { createNote } from '../../../store/actions/noteAction';
 import { Redirect } from 'react-router-dom';
 import firebase from 'firebase';
+import CreateNoteInterface from './CreateNoteInterface';
+
+//Globals
 let username = [];
 let userId = [];
 let docName = [];
 let docId = [];
-class CreateNote extends Component {
-
-    constructor(props) {
-        super(props);
-        this.projectIdn = null;
-
-        this.state = {
-            title: '',
-            content: '',
-            projectId: null,
-            authorName: ''
-        }
-
-    }
+class CreateNote extends CreateNoteInterface {
 
     // Note List Generation
     async componentDidMount() {
